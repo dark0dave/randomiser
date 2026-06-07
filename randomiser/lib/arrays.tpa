@@ -19,26 +19,13 @@ COPY - "randomiser/lists/mod_compat.2da"
     END
   END
 
-ACTION_IF prompt = 1 AND "%Preserve%" STRING_EQUAL_CASE n BEGIN
-  OUTER_SPRINT first @100010
-  OUTER_SPRINT second @100011
-  OUTER_SPRINT howdoyoudo "%first%"^" %second%"
-  PRINT "%howdoyoudo%"
-  ACTION_READLN answer
-  OUTER_WHILE NOT ("%answer%" STRING_EQUAL_CASE y OR "%answer%" STRING_EQUAL_CASE n) BEGIN
-    PRINT @100011
-    ACTION_READLN answer
-  END
-  ACTION_IF "%answer%" STRING_EQUAL_CASE y BEGIN
-    ACTION_PHP_EACH mod_compat_array AS ident => blank BEGIN
-      OUTER_SPRINT $ident_filter("%ident%") ""
-    END
-    COPY_EXISTING + "fl#randoptions.2da" override
-      COUNT_2DA_ROWS 1 rc
-      INSERT_2DA_ROW rc 1 ModCompatYes
-      SET $RandOptions(ModCompatYes) = 1
-  END
+ACTION_PHP_EACH mod_compat_array AS ident => blank BEGIN
+  OUTER_SPRINT $ident_filter("%ident%") ""
 END
+COPY_EXISTING + "fl#randoptions.2da" override
+  COUNT_2DA_ROWS 1 rc
+  INSERT_2DA_ROW rc 1 ModCompatYes
+  SET $RandOptions(ModCompatYes) = 1
 
 ACTION_IF "%Preserve%" STRING_EQUAL_CASE y AND VARIABLE_IS_SET $RandOptions(ModCompatYes) BEGIN
   ACTION_PHP_EACH mod_compat_array AS ident => blank BEGIN
